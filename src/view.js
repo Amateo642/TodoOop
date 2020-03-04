@@ -1,7 +1,9 @@
-import { createElement } from './helpers.js';
+import { createElement, EventEmitter } from './helpers.js';
 
-class view {
+class view extends EventEmitter {
     constructor() {
+        super();
+
         this.form = document.getElementById('todo-form');
         this.input = document.getElementById('add-input');
         this.list = document.getElementById('todo-list');
@@ -41,7 +43,7 @@ class view {
 
         const value = this.input.value;
 
-        // add item to model
+        this.emit('add', value);
     }
 
     handleToggle({ target }) {
@@ -49,7 +51,7 @@ class view {
         const id = listItem.getAttribute('data-id');
         const completed = target.completed;
 
-        // update model
+        this.emit('toggle', { id, completed });
     }
 
     handleEdit({ target }) {
@@ -62,7 +64,7 @@ class view {
         const isEditing = listItem.classList.contains('editing');
 
         if (isEditing) {
-            // update model
+            this.emit('edit', { id, title });
         } else {
             input.value = label.textContent;
             editButton.textContent = 'Save';
@@ -72,8 +74,9 @@ class view {
 
     handleRemove({ target }) {
         const listItem = target.parentNode;
+        const id = listItem.getAttribute('data-id');
 
-        // remove
+        this.emit('remove', id);
     }
 
     findListItem(id) {

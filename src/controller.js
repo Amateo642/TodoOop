@@ -30,7 +30,7 @@ class Controller {
     editTodo({ id, title }) {
         const item = this.model.updateItem(id, { title });
 
-        this.view.eidtItem(item);
+        this.view.editItem(item);
     }
 
     removeTodo(id) {

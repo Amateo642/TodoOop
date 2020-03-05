@@ -82,7 +82,7 @@ class View extends EventEmitter {
 
     show(todos) {
         todos.forEach(todo => {
-            const listItem = this.createListItem(todo);
+            const listItem = this.createElement(todo);
 
             this.list.appendChild(listItem);
         });

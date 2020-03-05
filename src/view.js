@@ -1,6 +1,6 @@
-import { createElement, EventEmitter } from './helpers.js';
+import { createElement, EventEmitter } from './helpers';
 
-class view extends EventEmitter {
+class View extends EventEmitter {
     constructor() {
         super();
 
@@ -12,22 +12,20 @@ class view extends EventEmitter {
     }
 
     createElement(todo) {
-        const checkbox = createElement('input', { type: 'checkbox', className: 'checkbox', checked: todo.completed ? 'checked'
-        : ''});
+        const checkbox = createElement('input', { type: 'checkbox', className: 'checkbox', checked: todo.completed ? 'checked' : ''});
         const label = createElement('label', { className: 'title'}, todo.title);
         const editInput = createElement('input', { type: 'text', className: 'textfield' });
         const editButton = createElement('button', { className: 'edit'}, 'Edit');
         const removeButton = createElement('button', { className: 'remove'}, 'Remove');
-        const item = createElement('li', { className: `todo-item${todo.completed ? ' completed' : ''}`, 'data-id': todo.id }, 
-        checkbox, label, editInput, editButton, removeButton);
+        const item = createElement('li', { className: `todo-item${todo.completed ? ' completed' : ''}`, 'data-id': todo.id }, checkbox, label, editInput, editButton, removeButton);
 
         return this.addEventListeners(item);
     }
 
     addEventListeners(item) {
-        const checkbox = listItem.querySelector('.checkbox');
-        const editButton = listItem.querySelector('button.edit');
-        const removeButton = listItem.querySelector('button.remove');
+        const checkbox = item.querySelector('.checkbox');
+        const editButton = item.querySelector('button.edit');
+        const removeButton = item.querySelector('button.remove');
 
         checkbox.addEventListener('change', this.handleToggle.bind(this));
         editButton.addEventListener('click', this.handleEdit.bind(this));
@@ -36,10 +34,14 @@ class view extends EventEmitter {
         return item;
     }
 
+    findListItem(id) {
+        return this.list.querySelector(`[data-id="${id}"]`);
+    }
+
     handleAdd(event) {
         event.preventDefault();
 
-        if (!this.input.value) return alert('Need input task name');
+        if (!this.input.value) return alert('Need input task name.');
 
         const value = this.input.value;
 
@@ -49,7 +51,7 @@ class view extends EventEmitter {
     handleToggle({ target }) {
         const listItem = target.parentNode;
         const id = listItem.getAttribute('data-id');
-        const completed = target.completed;
+        const completed = target.checked;
 
         this.emit('toggle', { id, completed });
     }
@@ -74,13 +76,16 @@ class view extends EventEmitter {
 
     handleRemove({ target }) {
         const listItem = target.parentNode;
-        const id = listItem.getAttribute('data-id');
 
-        this.emit('remove', id);
+        this.emit('remove', listItem.getAttribute('data-id'));
     }
 
-    findListItem(id) {
-        return this.list.querySelector(`[data-id="${id}"]`);
+    show(todos) {
+        todos.forEach(todo => {
+            const listItem = this.createListItem(todo);
+
+            this.list.appendChild(listItem);
+        });
     }
 
     addItem(todo) {
@@ -115,10 +120,10 @@ class view extends EventEmitter {
     }
 
     removeItem(id) {
-        const listItem = this.findListItem(todo.id);
+        const listItem = this.findListItem(id);
 
         this.list.removeChild(listItem);
     }
 }
 
-export default view;
+export default View;
